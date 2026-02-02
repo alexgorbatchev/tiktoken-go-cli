@@ -1,0 +1,154 @@
+# tiktoken-go-cli
+
+A command-line interface for counting tokens using OpenAI's tiktoken tokenizer, powered by [tiktoken-go](https://github.com/pkoukk/tiktoken-go).
+
+## Features
+
+- Count tokens in text using various OpenAI tokenization encodings
+- Encode text to token IDs
+- Decode token IDs back to text
+- Support for all major OpenAI models (GPT-4o, GPT-4, GPT-3.5-turbo, etc.)
+- Read from stdin for piping
+- Cross-platform (Linux, macOS, Windows)
+
+## Installation
+
+### Using Homebrew (macOS/Linux)
+
+```bash
+brew install alexgorbatchev/tap/tiktoken
+```
+
+### Download Binary
+
+Download the latest release from the [releases page](https://github.com/alexgorbatchev/tiktoken-go-cli/releases).
+
+### Build from Source
+
+```bash
+go install github.com/alexgorbatchev/tiktoken-go-cli@latest
+```
+
+Or clone and build:
+
+```bash
+git clone https://github.com/alexgorbatchev/tiktoken-go-cli.git
+cd tiktoken-go-cli
+go build -o tiktoken
+```
+
+## Usage
+
+### Count Tokens
+
+```bash
+# Count tokens from argument
+tiktoken count "Hello, world!"
+
+# Count tokens from stdin
+echo "Hello, world!" | tiktoken count
+
+# Count tokens for a specific model
+tiktoken count -m gpt-4o "Hello, world!"
+
+# Count tokens using a specific encoding
+tiktoken count -e o200k_base "Hello, world!"
+
+# Count tokens from a file
+cat myfile.txt | tiktoken count
+```
+
+### Encode Text
+
+```bash
+# Encode text to token IDs
+tiktoken encode "Hello, world!"
+# Output: 9906 11 1917 0
+
+# Encode using a specific model
+tiktoken encode -m gpt-4o "Hello, world!"
+```
+
+### Decode Tokens
+
+```bash
+# Decode token IDs back to text
+tiktoken decode 15339 1917 0
+
+# Decode from stdin
+echo "15339 1917 0" | tiktoken decode
+
+# Chain encode and decode
+tiktoken encode "Hello, world!" | tiktoken decode
+```
+
+### List Models
+
+```bash
+# Show available models and encodings
+tiktoken models
+```
+
+### Version
+
+```bash
+tiktoken version
+```
+
+## Available Encodings
+
+| Encoding     | Models                                                              |
+|--------------|---------------------------------------------------------------------|
+| `o200k_base` | gpt-4o, gpt-4.1, gpt-4.5                                           |
+| `cl100k_base`| gpt-4, gpt-3.5-turbo, text-embedding-ada-002, text-embedding-3-*   |
+| `p50k_base`  | Codex models, text-davinci-002, text-davinci-003                   |
+| `r50k_base`  | GPT-3 models (davinci, curie, babbage, ada)                        |
+
+## Flags
+
+| Flag            | Short | Description                                    |
+|-----------------|-------|------------------------------------------------|
+| `--model`       | `-m`  | OpenAI model name (e.g., gpt-4o, gpt-4)       |
+| `--encoding`    | `-e`  | Encoding name (default: cl100k_base)          |
+| `--help`        | `-h`  | Show help for command                          |
+
+## Examples
+
+### Counting tokens for a file
+
+```bash
+cat README.md | tiktoken count
+```
+
+### Using in shell scripts
+
+```bash
+TOKEN_COUNT=$(echo "Your text here" | tiktoken count)
+echo "Token count: $TOKEN_COUNT"
+```
+
+### Comparing encodings
+
+```bash
+TEXT="Hello, world!"
+echo "o200k_base: $(tiktoken count -e o200k_base "$TEXT")"
+echo "cl100k_base: $(tiktoken count -e cl100k_base "$TEXT")"
+echo "p50k_base: $(tiktoken count -e p50k_base "$TEXT")"
+```
+
+## Testing
+
+Run the integration tests:
+
+```bash
+./test.sh
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [tiktoken-go](https://github.com/pkoukk/tiktoken-go) - Go implementation of tiktoken
+- [tiktoken](https://github.com/openai/tiktoken) - Original Python library by OpenAI

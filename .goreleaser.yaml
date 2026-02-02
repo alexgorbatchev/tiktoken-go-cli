@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: tiktoken
+    main: ./main.go
+    binary: tiktoken
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/alexgorbatchev/tiktoken-go-cli/cmd.version={{.Version}}
+      - -X github.com/alexgorbatchev/tiktoken-go-cli/cmd.commit={{.Commit}}
+      - -X github.com/alexgorbatchev/tiktoken-go-cli/cmd.date={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: alexgorbatchev
+    name: tiktoken-go-cli
+  draft: false
+  prerelease: auto
+  name_template: "{{.ProjectName}} v{{.Version}}"
+
+brews:
+  - name: tiktoken
+    repository:
+      owner: alexgorbatchev
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    skip_upload: auto
+    directory: Formula
+    homepage: "https://github.com/alexgorbatchev/tiktoken-go-cli"
+    description: "CLI tool for counting tokens using OpenAI's tiktoken"
+    license: "MIT"
+    test: |
+      system "#{bin}/tiktoken", "version"
+    install: |
+      bin.install "tiktoken"
