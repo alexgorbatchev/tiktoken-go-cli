@@ -35,10 +35,10 @@ go build -o tiktoken
 
 ### Count Tokens (Default)
 
-Count is the default action - no subcommand needed:
+Count is the default action - no subcommand needed. Uses `cl100k_base` encoding by default (GPT-4, GPT-3.5-turbo).
 
 ```bash
-# Count tokens from argument
+# Count tokens (uses cl100k_base encoding by default)
 tiktoken "Hello, world!"
 
 # Count tokens from stdin

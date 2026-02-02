@@ -24,10 +24,11 @@ var rootCmd = &cobra.Command{
 	Long: `tiktoken-go-cli is a command line interface for the tiktoken-go library.
 It allows you to count tokens in text using various OpenAI tokenization encodings.
 
-When called without a subcommand, it defaults to counting tokens.
+When called without a subcommand, it defaults to counting tokens using the
+cl100k_base encoding (used by GPT-4 and GPT-3.5-turbo).
 
 Examples:
-  # Count tokens using default encoding (cl100k_base)
+  # Count tokens (uses cl100k_base encoding by default)
   echo "Hello, world!" | tiktoken
 
   # Count tokens from argument
