@@ -72,12 +72,6 @@ release:
   draft: false
   prerelease: auto
   name_template: "{{.ProjectName}} v{{.Version}}"
-
-brews:
-  - name: tiktoken
-    repository:
-      owner: alexgorbatchev
-      name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     skip_upload: auto
     directory: Formula

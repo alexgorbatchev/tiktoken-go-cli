@@ -13,12 +13,6 @@ A command-line interface for counting tokens using OpenAI's tiktoken tokenizer, 
 
 ## Installation
 
-### Using Homebrew (macOS/Linux)
-
-```bash
-brew install alexgorbatchev/tap/tiktoken
-```
-
 ### Download Binary
 
 Download the latest release from the [releases page](https://github.com/alexgorbatchev/tiktoken-go-cli/releases).
