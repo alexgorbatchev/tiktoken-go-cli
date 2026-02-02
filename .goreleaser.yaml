@@ -72,13 +72,3 @@ release:
   draft: false
   prerelease: auto
   name_template: "{{.ProjectName}} v{{.Version}}"
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    skip_upload: auto
-    directory: Formula
-    homepage: "https://github.com/alexgorbatchev/tiktoken-go-cli"
-    description: "CLI tool for counting tokens using OpenAI's tiktoken"
-    license: "MIT"
-    test: |
-      system "#{bin}/tiktoken", "version"
-    install: |
-      bin.install "tiktoken"
