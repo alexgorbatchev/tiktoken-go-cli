@@ -39,23 +39,28 @@ go build -o tiktoken
 
 ## Usage
 
-### Count Tokens
+### Count Tokens (Default)
+
+Count is the default action - no subcommand needed:
 
 ```bash
 # Count tokens from argument
-tiktoken count "Hello, world!"
+tiktoken "Hello, world!"
 
 # Count tokens from stdin
-echo "Hello, world!" | tiktoken count
+echo "Hello, world!" | tiktoken
 
 # Count tokens for a specific model
-tiktoken count -m gpt-4o "Hello, world!"
+tiktoken -m gpt-4o "Hello, world!"
 
 # Count tokens using a specific encoding
-tiktoken count -e o200k_base "Hello, world!"
+tiktoken -e o200k_base "Hello, world!"
 
 # Count tokens from a file
-cat myfile.txt | tiktoken count
+cat myfile.txt | tiktoken
+
+# Using explicit count subcommand (also works)
+tiktoken count "Hello, world!"
 ```
 
 ### Encode Text

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pkoukk/tiktoken-go"
 	"github.com/spf13/cobra"
 )
 
@@ -11,29 +12,40 @@ var (
 	version = "dev"
 	commit  = "none"
 	date    = "unknown"
+
+	// Root command flags (for default count behavior)
+	rootModel    string
+	rootEncoding string
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "tiktoken",
+	Use:   "tiktoken [text]",
 	Short: "A CLI tool for counting tokens using OpenAI's tiktoken",
 	Long: `tiktoken-go-cli is a command line interface for the tiktoken-go library.
 It allows you to count tokens in text using various OpenAI tokenization encodings.
 
+When called without a subcommand, it defaults to counting tokens.
+
 Examples:
   # Count tokens using default encoding (cl100k_base)
-  echo "Hello, world!" | tiktoken count
+  echo "Hello, world!" | tiktoken
+
+  # Count tokens from argument
+  tiktoken "Hello, world!"
 
   # Count tokens for a specific model
-  tiktoken count -m gpt-4o "Hello, world!"
+  tiktoken -m gpt-4o "Hello, world!"
 
   # Count tokens using a specific encoding
-  tiktoken count -e o200k_base "Hello, world!"
+  tiktoken -e o200k_base "Hello, world!"
 
   # Encode text to token IDs
   tiktoken encode "Hello, world!"
 
   # Decode token IDs back to text
   tiktoken decode 15339 1917 0`,
+	Args: cobra.ArbitraryArgs,
+	RunE: runRootCount,
 }
 
 var versionCmd = &cobra.Command{
@@ -55,4 +67,39 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.Flags().StringVarP(&rootModel, "model", "m", "", "OpenAI model name (e.g., gpt-4o, gpt-4, gpt-3.5-turbo)")
+	rootCmd.Flags().StringVarP(&rootEncoding, "encoding", "e", "cl100k_base", "Encoding name (o200k_base, cl100k_base, p50k_base, r50k_base)")
+}
+
+// runRootCount is the default behavior when no subcommand is provided
+func runRootCount(cmd *cobra.Command, args []string) error {
+	// If no args and no stdin, show help
+	stat, _ := os.Stdin.Stat()
+	if len(args) == 0 && (stat.Mode()&os.ModeCharDevice) != 0 {
+		return cmd.Help()
+	}
+
+	text, err := getText(args)
+	if err != nil {
+		return err
+	}
+
+	var enc *tiktoken.Tiktoken
+
+	if rootModel != "" {
+		enc, err = tiktoken.EncodingForModel(rootModel)
+		if err != nil {
+			return fmt.Errorf("failed to get encoding for model %s: %w", rootModel, err)
+		}
+	} else {
+		enc, err = tiktoken.GetEncoding(rootEncoding)
+		if err != nil {
+			return fmt.Errorf("failed to get encoding %s: %w", rootEncoding, err)
+		}
+	}
+
+	tokens := enc.Encode(text, nil, nil)
+	fmt.Println(len(tokens))
+
+	return nil
 }

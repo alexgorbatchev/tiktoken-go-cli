@@ -127,7 +127,29 @@ run_test "count with gpt-3.5-turbo model" \
     "./tiktoken count -m gpt-3.5-turbo 'Hello, world'" \
     "3"
 
-run_test "count with o200k_base encoding" \
+# ===========================================
+# Default count behavior (no subcommand)
+# ===========================================
+echo ""
+echo -e "${YELLOW}=== Default Count (no subcommand) ===${NC}"
+
+run_test "default count from argument" \
+    "./tiktoken 'Hello, world'" \
+    "3"
+
+run_test "default count from stdin" \
+    "echo 'Hello, world' | ./tiktoken" \
+    "3"
+
+run_test "default count with gpt-4o model" \
+    "./tiktoken -m gpt-4o 'Hello, world'" \
+    "3"
+
+run_test "default count with encoding" \
+    "./tiktoken -e o200k_base 'Hello, world'" \
+    "3"
+
+run_test "default count with o200k_base encoding" \
     "./tiktoken count -e o200k_base 'Hello, world'" \
     "3"
 
